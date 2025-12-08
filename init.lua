@@ -218,6 +218,48 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+-- Python-specific settings
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  desc = 'Python-specific settings',
+  group = vim.api.nvim_create_augroup('python-settings', { clear = true }),
+  callback = function()
+    -- Set indentation to 4 spaces (Python standard)
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.expandtab = true
+    vim.opt_local.textwidth = 88  -- Black's default line length
+    
+    -- Detect and use virtual environment
+    local venv_path = vim.env.VIRTUAL_ENV
+      or (vim.fn.findfile('pyproject.toml', '.;') ~= '' and vim.fn.getcwd() .. '/.venv')
+      or (vim.fn.findfile('requirements.txt', '.;') ~= '' and vim.fn.getcwd() .. '/venv')
+    
+    if venv_path and vim.fn.isdirectory(venv_path) == 1 then
+      vim.g.python3_host_prog = venv_path .. '/bin/python'
+    end
+  end,
+})
+
+-- Python-specific keymaps for running code
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  desc = 'Python keymaps',
+  group = vim.api.nvim_create_augroup('python-keymaps', { clear = true }),
+  callback = function()
+    -- Run current Python file
+    vim.keymap.set('n', '<leader>rr', ':!python3 %<CR>', { 
+      buffer = true, 
+      desc = '[R]un cu[R]rent Python file' 
+    })
+    
+    -- Open Python REPL in terminal
+    vim.keymap.set('n', '<leader>rp', ':terminal python3<CR>', { 
+      buffer = true, 
+      desc = '[R]un [P]ython REPL' 
+    })
+  end,
+})
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
