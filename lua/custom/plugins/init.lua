@@ -66,4 +66,9 @@ return {
     ---@type render.md.UserConfig
     opts = {},
   },
+{
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" }
+},
 }
